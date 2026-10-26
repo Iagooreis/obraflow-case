@@ -3,5 +3,3 @@ class CnpjAlreadyExistsError(Exception):
         super().__init__(
             f"Fornecedor com CNPJ {cnpj} ja cadastrado",
         )
-
-

@@ -3,7 +3,7 @@
 Implementação do desafio técnico da ObraFlow.
 
 Nesta etapa, a aplicação possui uma página inicial e uma API para
-cadastro e listagem de fornecedores e obras, com persistência em SQLite
+cadastro e listagem de fornecedores, obras e usuários, com persistência em SQLite
 e testes automatizados.
 
 O enunciado original está em [DESAFIO.md](DESAFIO.md).
@@ -13,8 +13,8 @@ O enunciado original está em [DESAFIO.md](DESAFIO.md).
 - Python 3.12+
 - FastAPI e Uvicorn
 - SQLAlchemy e SQLite
-- Jinja2, HTML, CSS e JavaScript
-- pytest e HTTPX
+- Jinja2 e HTML
+- pytest, HTTPX e Ruff
 
 ## Como executar
 
@@ -53,6 +53,8 @@ conforme o arquivo `.env.example`.
 | GET | `/api/fornecedores` | Listar fornecedores |
 | POST | `/api/obras` | Cadastrar obra |
 | GET | `/api/obras` | Listar obras |
+| POST | `/api/usuarios` | Cadastrar usuário |
+| GET | `/api/usuarios` | Listar usuários |
 
 Exemplo de corpo para cadastro de fornecedor:
 
@@ -75,6 +77,9 @@ Para cadastrar uma obra, envie `{"nome_obra": "Residencial Horizonte"}`
 para `POST /api/obras`. O nome é obrigatório, tem até 200 caracteres
 e espaços nas extremidades são removidos.
 
+Para cadastrar um usuário, envie `{"nome_usuario": "Amanda"}`
+para `POST /api/usuarios`. O nome é obrigatório e tem até 150 caracteres.
+
 ## Testes
 
 ```bash
@@ -82,6 +87,13 @@ uv run pytest
 ```
 
 Os testes utilizam um banco temporário separado para cada cenário.
+
+Para verificar o código e sua formatação:
+
+```bash
+uv run ruff check app tests
+uv run ruff format --check app tests
+```
 
 ## Decisões técnicas
 
@@ -96,8 +108,8 @@ Os testes utilizam um banco temporário separado para cada cenário.
 
 ## Próximas etapas
 
-Cadastro de usuários, dados de demonstração, regras de alçada,
-pedidos com itens e fluxo de aprovação.
+Dados de demonstração, regras de alçada, pedidos com itens
+e fluxo de aprovação.
 
 ## Reaproveitamento
 
