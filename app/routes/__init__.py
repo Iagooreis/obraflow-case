@@ -1,0 +1,1 @@
+from app.routes.fornecedor import router as fornecedor_router

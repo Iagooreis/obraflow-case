@@ -1,0 +1,1 @@
+from app.schemas.fornecedor import FornecedorCreate, FornecedorResponse

@@ -1,0 +1,1 @@
+from app.services.fornecedor_service import FornecedorService
