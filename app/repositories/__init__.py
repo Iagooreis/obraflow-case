@@ -1,1 +1,2 @@
 from app.repositories.fornecedor_repository import FornecedorRepository
+from app.repositories.obra_repository import ObraRepository

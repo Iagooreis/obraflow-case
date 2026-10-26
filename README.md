@@ -3,7 +3,7 @@
 Implementação do desafio técnico da ObraFlow.
 
 Nesta etapa, a aplicação possui uma página inicial e uma API para
-cadastro e listagem de fornecedores, com persistência em SQLite
+cadastro e listagem de fornecedores e obras, com persistência em SQLite
 e testes automatizados.
 
 O enunciado original está em [DESAFIO.md](DESAFIO.md).
@@ -51,8 +51,10 @@ conforme o arquivo `.env.example`.
 |---|---|---|
 | POST | `/api/fornecedores` | Cadastrar fornecedor |
 | GET | `/api/fornecedores` | Listar fornecedores |
+| POST | `/api/obras` | Cadastrar obra |
+| GET | `/api/obras` | Listar obras |
 
-Exemplo de corpo para cadastro:
+Exemplo de corpo para cadastro de fornecedor:
 
 ```json
 {
@@ -63,11 +65,15 @@ Exemplo de corpo para cadastro:
 }
 ```
 
-O cadastro retorna 201 quando realizado, 422 para dados inválidos
+O cadastro de fornecedor retorna 201 quando realizado, 422 para dados inválidos
 e 409 quando o CNPJ já está cadastrado.
 
 A validação do CNPJ verifica o formato de 14 dígitos,
 sem calcular os dígitos verificadores.
+
+Para cadastrar uma obra, envie `{"nome_obra": "Residencial Horizonte"}`
+para `POST /api/obras`. O nome é obrigatório, tem até 200 caracteres
+e espaços nas extremidades são removidos.
 
 ## Testes
 
@@ -90,7 +96,7 @@ Os testes utilizam um banco temporário separado para cada cenário.
 
 ## Próximas etapas
 
-Cadastro de obras e usuários, dados de demonstração, regras de alçada,
+Cadastro de usuários, dados de demonstração, regras de alçada,
 pedidos com itens e fluxo de aprovação.
 
 ## Reaproveitamento
