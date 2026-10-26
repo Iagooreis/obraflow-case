@@ -3,8 +3,8 @@
 Implementação do desafio técnico da ObraFlow.
 
 Nesta etapa, a aplicação possui uma página inicial e uma API para
-cadastro e listagem de fornecedores, obras e usuários, com persistência em SQLite
-e testes automatizados.
+cadastrar e listar fornecedores, obras e usuários e configurar as regras
+de alçada por obra, com persistência em SQLite e testes automatizados.
 
 O enunciado original está em [DESAFIO.md](DESAFIO.md).
 
@@ -55,6 +55,8 @@ conforme o arquivo `.env.example`.
 | GET | `/api/obras` | Listar obras |
 | POST | `/api/usuarios` | Cadastrar usuário |
 | GET | `/api/usuarios` | Listar usuários |
+| GET | `/api/obras/{id_obra}/alcadas` | Consultar faixas e aprovadores da obra |
+| PUT | `/api/obras/{id_obra}/alcadas` | Substituir a configuração de alçadas da obra |
 
 Exemplo de corpo para cadastro de fornecedor:
 
@@ -80,6 +82,26 @@ e espaços nas extremidades são removidos.
 Para cadastrar um usuário, envie `{"nome_usuario": "Amanda"}`
 para `POST /api/usuarios`. O nome é obrigatório e tem até 150 caracteres.
 
+Para configurar as alçadas, envie um PUT para
+`/api/obras/{id_obra}/alcadas` com os IDs dos usuários cadastrados:
+
+```json
+{
+  "faixas": [
+    {"limite_superior_centavos": 1000000, "aprovadores": [1]},
+    {"limite_superior_centavos": null, "aprovadores": [1, 2]}
+  ]
+}
+```
+
+Nesse exemplo, pedidos até R$ 10.000,00 exigirão o usuário 1; acima desse
+valor, o usuário 1 aprovará antes do usuário 2. O limite `null` indica a
+última faixa, sem valor máximo. A ordem dos IDs define a ordem de aprovação.
+O PUT substitui todas as faixas anteriores da obra em uma transação;
+`{"faixas": []}` remove todas. O GET devolve a configuração salva.
+Obra inexistente retorna 404; limites repetidos, fora de ordem ou
+usuários inexistentes retornam 422.
+
 ## Testes
 
 ```bash
@@ -103,13 +125,17 @@ uv run ruff format --check app tests
 - Jinja2 renderiza páginas HTML no servidor.
 - A validação dos dados ocorre nos schemas; o banco também impõe
   restrições de formato e unicidade do CNPJ.
+- Faixas de alçada pertencem a uma obra e têm limites crescentes em centavos.
+  Os aprovadores são vinculados por ID e sua posição define a ordem.
+- A configuração completa é substituída em uma transação SQLite iniciada
+  antes das leituras de validação, evitando alterações parciais ou misturadas.
 - A criação inicial das tabelas usa `create_all`, que não substitui
   migrations para alterações futuras de estrutura.
 
 ## Próximas etapas
 
-Dados de demonstração, regras de alçada, pedidos com itens
-e fluxo de aprovação.
+Dados de demonstração, tela de configuração das alçadas,
+pedidos com itens, fluxo de aprovação e suas telas.
 
 ## Reaproveitamento
 
