@@ -50,6 +50,7 @@ class PedidoListaResponse(PedidoResponse):
     nome_fornecedor: str
     id_aprovador_atual: int | None
     nome_aprovador_atual: str | None
+    quantidade_itens: int
 
 
 class ItemPedidoResponse(BaseModel):

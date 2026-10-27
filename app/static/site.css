@@ -219,3 +219,227 @@ button:disabled {
         width: 100%;
     }
 }
+
+main > a[href="/pedidos/novo"] {
+    display: inline-flex;
+    margin-bottom: 12px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    background: #b42358;
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+#estado-lista:not([hidden]) {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid #e1e6ee;
+    border-radius: 12px;
+    background: white;
+}
+
+#lista-pedidos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.pedido-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px;
+    border: 1px solid #e1e6ee;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 8px 24px rgb(25 34 56 / 6%);
+}
+
+.pedido-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.pedido-numero {
+    color: #596477;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.pedido-status {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.status-pendente {
+    background: #fff1cf;
+    color: #805500;
+}
+
+.status-aprovado {
+    background: #ddf5e6;
+    color: #17613b;
+}
+
+.status-rejeitado {
+    background: #fde5e8;
+    color: #9b2335;
+}
+
+.pedido-obra {
+    margin: 4px 0 0;
+    font-size: 1.2rem;
+    overflow-wrap: anywhere;
+}
+
+.pedido-fornecedor {
+    margin: 0;
+    color: #596477;
+}
+
+.pedido-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 4px 0;
+    padding: 16px 0;
+    border-top: 1px solid #e1e6ee;
+    border-bottom: 1px solid #e1e6ee;
+}
+
+.pedido-resumo dt {
+    color: #687489;
+    font-size: 0.8rem;
+}
+
+.pedido-resumo dd {
+    margin: 5px 0 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.pedido-aprovador {
+    margin: auto 0 0;
+    padding: 11px 12px;
+    border-radius: 9px;
+    background: #f4f6fa;
+    color: #334158;
+}
+
+@media (max-width: 480px) {
+    .pedido-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pedido-resumo div:last-child {
+        grid-column: 1 / -1;
+    }
+}
+.pedido-link {
+    margin-top: 8px;
+    color: #b42358;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.detalhe-bloco {
+    margin-top: 22px;
+    padding: 24px;
+    border: 1px solid #e1e6ee;
+    border-radius: 14px;
+    background: white;
+}
+
+.tabela-scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e1e6ee;
+    text-align: left;
+}
+
+.etapas li {
+    padding: 12px 0;
+}
+
+.etapas small {
+    display: block;
+    margin-top: 5px;
+    color: #596477;
+}
+#decisao-pedido label {
+    display: block;
+    margin: 16px 0 8px;
+    font-weight: 700;
+}
+
+#usuario-decisao {
+    max-width: 360px;
+}
+
+.acoes-decisao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+#aprovar-pedido {
+    border: 1px solid #17613b;
+    background: #17613b;
+    color: white;
+}
+
+#abrir-rejeicao,
+#confirmar-rejeicao {
+    border: 1px solid #a12538;
+    background: #a12538;
+    color: white;
+}
+
+#area-rejeicao {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 10px;
+    background: #fff4f5;
+}
+
+#area-rejeicao textarea {
+    display: block;
+    margin-bottom: 12px;
+}
+
+#cancelar-rejeicao {
+    margin-left: 8px;
+    border: 1px solid #b9c3d1;
+    background: white;
+}
+
+#mensagem-decisao:empty {
+    display: none;
+}
+
+#mensagem-decisao:not(:empty) {
+    padding: 12px 14px;
+    border-radius: 9px;
+}
+
+#mensagem-decisao.erro {
+    background: #fdebed;
+    color: #9b2335;
+}

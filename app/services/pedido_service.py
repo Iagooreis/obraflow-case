@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import and_, or_, select, text
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.orm import Session
 
 from app.models import (
@@ -246,12 +246,21 @@ def listar_pedidos(session: Session) -> list[PedidoListaResponse]:
         )
         .order_by(Pedido.id_pedido.desc())
     ).all()
+    contagens = dict(
+        session.execute(
+            select(
+                ItemPedido.id_pedido,
+                func.count(ItemPedido.id_item_pedido),
+            ).group_by(ItemPedido.id_pedido)
+        ).all()
+    )
 
     return [
         PedidoListaResponse(
             **PedidoResponse.model_validate(pedido).model_dump(),
             nome_obra=nome_obra,
             nome_fornecedor=nome_fornecedor,
+            quantidade_itens=contagens.get(pedido.id_pedido, 0),
             id_aprovador_atual=id_usuario,
             nome_aprovador_atual=nome_aprovador,
         )
