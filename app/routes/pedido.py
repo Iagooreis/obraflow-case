@@ -6,9 +6,15 @@ from app.schemas import (
     DecisaoPedidoInput,
     PedidoCreate,
     PedidoDetalheResponse,
+    PedidoListaResponse,
     PedidoResponse,
 )
-from app.services.pedido_service import criar_pedido, decidir_pedido, detalhar_pedido
+from app.services.pedido_service import (
+    criar_pedido,
+    decidir_pedido,
+    detalhar_pedido,
+    listar_pedidos,
+)
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
 
@@ -25,6 +31,11 @@ def create_pedido(dados: PedidoCreate, session: SessionDep) -> Pedido:
         raise HTTPException(status_code=404, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@router.get("", response_model=list[PedidoListaResponse])
+def list_pedidos(session: SessionDep) -> list[PedidoListaResponse]:
+    return listar_pedidos(session)
 
 
 @router.get("/{id_pedido}", response_model=PedidoDetalheResponse)

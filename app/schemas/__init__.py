@@ -8,6 +8,7 @@ from app.schemas.pedido import (
     ItemPedidoResponse,
     PedidoCreate,
     PedidoDetalheResponse,
+    PedidoListaResponse,
     PedidoResponse,
 )
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse
@@ -25,6 +26,7 @@ __all__ = [
     "ObraResponse",
     "PedidoCreate",
     "PedidoDetalheResponse",
+    "PedidoListaResponse",
     "PedidoResponse",
     "UsuarioCreate",
     "UsuarioResponse",

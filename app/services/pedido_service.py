@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from decimal import ROUND_HALF_UP, Decimal
 
-from sqlalchemy import or_, select, text
+from sqlalchemy import and_, or_, select, text
 from sqlalchemy.orm import Session
 
 from app.models import (
@@ -21,6 +21,7 @@ from app.schemas.pedido import (
     ItemPedidoResponse,
     PedidoCreate,
     PedidoDetalheResponse,
+    PedidoListaResponse,
     PedidoResponse,
 )
 
@@ -223,3 +224,36 @@ def decidir_pedido(
     except Exception:
         session.rollback()
         raise
+
+
+def listar_pedidos(session: Session) -> list[PedidoListaResponse]:
+    linhas = session.execute(
+        select(
+            Pedido,
+            Obra.nome_obra,
+            Fornecedor.nome_fornecedor,
+            EtapaAprovacao.id_usuario,
+            EtapaAprovacao.nome_aprovador,
+        )
+        .join(Obra, Obra.id_obra == Pedido.id_obra)
+        .join(Fornecedor, Fornecedor.id_fornecedor == Pedido.id_fornecedor)
+        .outerjoin(
+            EtapaAprovacao,
+            and_(
+                EtapaAprovacao.id_pedido == Pedido.id_pedido,
+                EtapaAprovacao.ordem == Pedido.etapa_atual,
+            ),
+        )
+        .order_by(Pedido.id_pedido.desc())
+    ).all()
+
+    return [
+        PedidoListaResponse(
+            **PedidoResponse.model_validate(pedido).model_dump(),
+            nome_obra=nome_obra,
+            nome_fornecedor=nome_fornecedor,
+            id_aprovador_atual=id_usuario,
+            nome_aprovador_atual=nome_aprovador,
+        )
+        for pedido, nome_obra, nome_fornecedor, id_usuario, nome_aprovador in linhas
+    ]

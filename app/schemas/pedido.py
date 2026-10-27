@@ -45,6 +45,13 @@ class PedidoResponse(BaseModel):
     etapa_atual: int | None
 
 
+class PedidoListaResponse(PedidoResponse):
+    nome_obra: str
+    nome_fornecedor: str
+    id_aprovador_atual: int | None
+    nome_aprovador_atual: str | None
+
+
 class ItemPedidoResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

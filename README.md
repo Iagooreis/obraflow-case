@@ -2,9 +2,10 @@
 
 Implementação do desafio técnico da ObraFlow.
 
-Nesta etapa, a aplicação possui uma página inicial e uma API para
-cadastrar e listar fornecedores, obras e usuários e configurar as regras
-de alçada por obra, com persistência em SQLite e testes automatizados.
+A aplicação possui uma página inicial e uma API para cadastrar fornecedores,
+obras, usuários e pedidos de compra. O backend calcula os totais, escolhe a
+regra de alçada da obra e registra aprovações e rejeições em sequência, com
+persistência em SQLite e testes automatizados.
 
 O enunciado original está em [DESAFIO.md](DESAFIO.md).
 
@@ -32,6 +33,17 @@ Crie as tabelas:
 uv run python -c 'from app.database import engine; from app.models import Base; Base.metadata.create_all(engine)'
 ```
 
+Para criar as tabelas e carregar dados de demonstração em um banco vazio,
+execute:
+
+```bash
+uv run python -m scripts.seed_demo
+```
+
+O script cria duas obras, um fornecedor, dois usuários, regras de alçada e
+pedidos pendente, aprovado e rejeitado. Uma segunda execução não duplica os
+dados de demonstração.
+
 Inicie o servidor:
 
 ```bash
@@ -57,6 +69,10 @@ conforme o arquivo `.env.example`.
 | GET | `/api/usuarios` | Listar usuários |
 | GET | `/api/obras/{id_obra}/alcadas` | Consultar faixas e aprovadores da obra |
 | PUT | `/api/obras/{id_obra}/alcadas` | Substituir a configuração de alçadas da obra |
+| POST | `/api/pedidos` | Criar pedido com itens e calcular o total |
+| GET | `/api/pedidos` | Listar pedidos e o aprovador atual |
+| GET | `/api/pedidos/{id_pedido}` | Consultar itens e histórico de aprovação |
+| POST | `/api/pedidos/{id_pedido}/decisoes` | Aprovar ou rejeitar a etapa atual |
 
 Exemplo de corpo para cadastro de fornecedor:
 
@@ -102,6 +118,39 @@ O PUT substitui todas as faixas anteriores da obra em uma transação;
 Obra inexistente retorna 404; limites repetidos, fora de ordem ou
 usuários inexistentes retornam 422.
 
+Exemplo de criação de pedido:
+
+```json
+{
+  "id_obra": 1,
+  "id_fornecedor": 1,
+  "data_pedido": "2026-10-27",
+  "itens": [
+    {
+      "descricao": "Tinta",
+      "quantidade": "1.5",
+      "unidade": "l",
+      "preco_unitario": "20.00"
+    }
+  ]
+}
+```
+
+O backend calcula e salva o total em centavos, identifica a faixa aplicável
+ao valor completo do pedido e copia seus aprovadores para as etapas do pedido.
+Uma obra sem faixa aplicável impede a criação com resposta 422. O GET de
+detalhes mostra itens, etapas, decisões e motivo de rejeição; a listagem
+mostra o aprovador atual dos pedidos pendentes.
+
+Para decidir uma etapa, envie, por exemplo,
+`{"id_usuario": 1, "acao": "APROVAR"}` para
+`POST /api/pedidos/{id_pedido}/decisoes`. Para rejeitar, use
+`"acao": "REJEITAR"` e informe `"motivo"`. O sistema exige que o ID
+informado corresponda ao aprovador da etapa atual, impede decisões fora de
+ordem e encerra o fluxo após rejeição ou aprovação da última etapa.
+Nesta versão de demonstração, o ID é informado pelo cliente; não há
+autenticação de usuários.
+
 ## Testes
 
 ```bash
@@ -113,8 +162,8 @@ Os testes utilizam um banco temporário separado para cada cenário.
 Para verificar o código e sua formatação:
 
 ```bash
-uv run ruff check app tests
-uv run ruff format --check app tests
+uv run ruff check app tests scripts
+uv run ruff format --check app tests scripts
 ```
 
 ## Decisões técnicas
@@ -129,13 +178,20 @@ uv run ruff format --check app tests
   Os aprovadores são vinculados por ID e sua posição define a ordem.
 - A configuração completa é substituída em uma transação SQLite iniciada
   antes das leituras de validação, evitando alterações parciais ou misturadas.
+- Valores são calculados com `Decimal` e salvos em centavos. A criação do
+  pedido salva cabeçalho, itens e etapas na mesma transação.
+- Os aprovadores são copiados para o pedido no momento da criação; editar a
+  alçada da obra não altera a sequência dos pedidos já existentes.
+- Cada decisão atualiza a etapa e o pedido na mesma transação. O próximo
+  aprovador só pode decidir após a aprovação da etapa anterior.
 - A criação inicial das tabelas usa `create_all`, que não substitui
   migrations para alterações futuras de estrutura.
 
 ## Próximas etapas
 
-Dados de demonstração, tela de configuração das alçadas,
-pedidos com itens, fluxo de aprovação e suas telas.
+Construir as telas de cadastro de pedidos, acompanhamento das decisões e
+configuração das alçadas, com estados de carregamento, validação e layout
+responsivo.
 
 ## Reaproveitamento
 
