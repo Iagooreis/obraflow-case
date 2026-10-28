@@ -62,6 +62,31 @@ async function carregarPedidos() {
                     ? `Agora: ${pedido.nome_aprovador_atual} ` +
                       `(etapa ${pedido.etapa_atual})`
                     : "Fluxo encerrado";
+            const listaEtapas = cartao.querySelector(".pedido-etapas");
+
+            for (const etapa of pedido.etapas) {
+                const linha = document.createElement("li");
+
+                const nome = document.createElement("span");
+                nome.textContent = `${etapa.ordem}. ${etapa.nome_aprovador}`;
+
+                const situacaoEtapa = document.createElement("strong");
+                if (etapa.status === "APROVADO") {
+                    situacaoEtapa.textContent = "Aprovou";
+                } else if (etapa.status === "REJEITADO") {
+                    situacaoEtapa.textContent = "Rejeitou";
+                } else if (pedido.status === "REJEITADO") {
+                    situacaoEtapa.textContent = "Não realizada";
+                } else if (etapa.ordem === pedido.etapa_atual) {
+                    situacaoEtapa.textContent = "Aguardando agora";
+                    linha.className = "etapa-atual";
+                } else {
+                    situacaoEtapa.textContent = "Próxima";
+                }
+
+                linha.append(nome, situacaoEtapa);
+                listaEtapas.append(linha);
+            }
             cartao.querySelector(".pedido-link").href =
                 `/pedidos/${pedido.id_pedido}`;
             lista.append(cartao);

@@ -17,6 +17,7 @@ from app.models import (
 from app.schemas.pedido import (
     DecisaoPedidoInput,
     EtapaAprovacaoResponse,
+    EtapaResumoResponse,
     ItemPedidoCreate,
     ItemPedidoResponse,
     PedidoCreate,
@@ -254,7 +255,28 @@ def listar_pedidos(session: Session) -> list[PedidoListaResponse]:
             ).group_by(ItemPedido.id_pedido)
         ).all()
     )
+    etapas_por_pedido: dict[int, list[EtapaResumoResponse]] = {}
 
+    linhas_etapas = session.execute(
+        select(
+            EtapaAprovacao.id_pedido,
+            EtapaAprovacao.ordem,
+            EtapaAprovacao.nome_aprovador,
+            EtapaAprovacao.status,
+        ).order_by(
+            EtapaAprovacao.id_pedido,
+            EtapaAprovacao.ordem,
+        )
+    )
+
+    for id_pedido, ordem, nome_aprovador, status in linhas_etapas:
+        etapas_por_pedido.setdefault(id_pedido, []).append(
+            EtapaResumoResponse(
+                ordem=ordem,
+                nome_aprovador=nome_aprovador,
+                status=status,
+            )
+        )
     return [
         PedidoListaResponse(
             **PedidoResponse.model_validate(pedido).model_dump(),
@@ -263,6 +285,7 @@ def listar_pedidos(session: Session) -> list[PedidoListaResponse]:
             quantidade_itens=contagens.get(pedido.id_pedido, 0),
             id_aprovador_atual=id_usuario,
             nome_aprovador_atual=nome_aprovador,
+            etapas=etapas_por_pedido.get(pedido.id_pedido, []),
         )
         for pedido, nome_obra, nome_fornecedor, id_usuario, nome_aprovador in linhas
     ]

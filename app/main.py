@@ -114,3 +114,11 @@ def pagina_detalhe_pedido(
             "aprovacao_atual": aprovacao_atual,
         },
     )
+
+@app.get("/alcadas", response_class=HTMLResponse)
+def pagina_alcadas(request: Request, session: SessionDep):
+    return templates.TemplateResponse(
+        request=request,
+        name="alcadas.html",
+        context={"obras": ObraService(session).list_all()},
+    )

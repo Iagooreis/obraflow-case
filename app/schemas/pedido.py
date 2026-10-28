@@ -45,12 +45,19 @@ class PedidoResponse(BaseModel):
     etapa_atual: int | None
 
 
+class EtapaResumoResponse(BaseModel):
+    ordem: int
+    nome_aprovador: str
+    status: str
+
+
 class PedidoListaResponse(PedidoResponse):
     nome_obra: str
     nome_fornecedor: str
     id_aprovador_atual: int | None
     nome_aprovador_atual: str | None
     quantidade_itens: int
+    etapas: list[EtapaResumoResponse]
 
 
 class ItemPedidoResponse(BaseModel):
