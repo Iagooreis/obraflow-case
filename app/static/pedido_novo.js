@@ -27,15 +27,38 @@ function atualizarTotais() {
     let itensValidos = true;
 
     for (const item of itens.querySelectorAll(".item")) {
-        const quantidade = paraInteiroDecimal(
-            item.querySelector(".quantidade").value, 3
+        const campoQuantidade = item.querySelector(".quantidade");
+        const campoPreco = item.querySelector(".preco");
+        const quantidade = paraInteiroDecimal(campoQuantidade.value, 3);
+        const preco = paraInteiroDecimal(campoPreco.value, 2);
+
+        const quantidadeInvalida = quantidade === null || quantidade <= 0n;
+        const precoInvalido = preco === null;
+
+        const mostrarQuantidade = campoQuantidade.value.trim() !== "" ||
+            campoQuantidade.dataset.tocado === "true";
+        const mostrarPreco = campoPreco.value.trim() !== "" ||
+            campoPreco.dataset.tocado === "true";
+
+        const erroQuantidade = item.querySelector(".erro-quantidade");
+        const erroPreco = item.querySelector(".erro-preco");
+
+        erroQuantidade.textContent = quantidadeInvalida && mostrarQuantidade
+            ? "Digite uma quantidade maior que zero, com até 3 casas decimais."
+            : "";
+        erroPreco.textContent = precoInvalido && mostrarPreco
+            ? "Digite um preço válido, com até 2 casas decimais."
+            : "";
+
+        campoQuantidade.setAttribute(
+            "aria-invalid", String(erroQuantidade.textContent !== "")
         );
-        const preco = paraInteiroDecimal(
-            item.querySelector(".preco").value, 2
+        campoPreco.setAttribute(
+            "aria-invalid", String(erroPreco.textContent !== "")
         );
 
         let totalItem = 0n;
-        if (quantidade === null || quantidade <= 0n || preco === null) {
+        if (quantidadeInvalida || precoInvalido) {
             itensValidos = false;
         } else {
             totalItem = (quantidade * preco + 500n) / 1000n;
@@ -44,7 +67,7 @@ function atualizarTotais() {
         item.querySelector(".total-item").textContent =
             formatarCentavos(totalItem);
         soma += totalItem;
-    }
+        }
 
     totalPedido.textContent = formatarCentavos(soma);
 
@@ -68,6 +91,8 @@ document.querySelector("#adicionar-item").addEventListener("click", () => {
 
     novoItem.querySelectorAll("input").forEach((campo) => {
         campo.value = "";
+        delete campo.dataset.tocado;
+        campo.removeAttribute("aria-invalid");
     });
 
     const remover = document.createElement("button");
@@ -91,6 +116,23 @@ itens.addEventListener("click", (evento) => {
 
 form.addEventListener("input", atualizarTotais);
 form.addEventListener("change", atualizarTotais);
+form.addEventListener("focusout", (evento) => {
+    const campo = evento.target;
+    if (!campo.matches(".quantidade, .preco")) return;
+
+    campo.dataset.tocado = "true";
+
+    if (campo.matches(".preco")) {
+        const centavos = paraInteiroDecimal(campo.value, 2);
+        if (centavos !== null) {
+            const reais = centavos / 100n;
+            const fracao = String(centavos % 100n).padStart(2, "0");
+            campo.value = `${reais},${fracao}`;
+        }
+    }
+
+    atualizarTotais();
+});
 
 form.addEventListener("submit", async (evento) => {
     evento.preventDefault();
@@ -104,9 +146,9 @@ form.addEventListener("submit", async (evento) => {
         observacoes: document.querySelector("#observacoes").value.trim() || null,
         itens: [...itens.querySelectorAll(".item")].map((item) => ({
             descricao: item.querySelector(".descricao").value.trim(),
-            quantidade: item.querySelector(".quantidade").value,
+            quantidade: item.querySelector(".quantidade").value.trim().replace(",", "."),
             unidade: item.querySelector(".unidade").value.trim(),
-            preco_unitario: item.querySelector(".preco").value,
+            preco_unitario: item.querySelector(".preco").value.trim().replace(",", "."),
         })),
     };
 
@@ -142,6 +184,10 @@ form.addEventListener("submit", async (evento) => {
         [...itens.querySelectorAll(".item")].slice(1).forEach(
             (item) => item.remove()
         );
+        form.querySelectorAll(".quantidade, .preco").forEach((campo) => {
+            delete campo.dataset.tocado;
+            campo.removeAttribute("aria-invalid");
+        });
         renumerarItens();
     } catch {
         mensagem.className = "erro";

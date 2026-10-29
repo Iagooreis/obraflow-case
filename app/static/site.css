@@ -583,3 +583,37 @@ td {
 .pedido-data {
     white-space: nowrap;
 }
+
+.erro-campo {
+    color: #9b2335;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.erro-campo:empty {
+    display: none;
+}
+
+.item input[aria-invalid="true"] {
+    border-color: #a12538;
+}
+.aviso-vazio {
+    padding: 14px 16px;
+    border: 1px solid #e5c46c;
+    border-radius: 9px;
+    background: #fff6df;
+    color: #694b00;
+}
+
+#tentar-lista {
+    margin-bottom: 20px;
+    border: 1px solid #b42358;
+    background: white;
+    color: #b42358;
+}
+#tentar-alcadas {
+    margin-top: 10px;
+    border: 1px solid #b42358;
+    background: white;
+    color: #b42358;
+}

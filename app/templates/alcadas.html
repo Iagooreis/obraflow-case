@@ -23,6 +23,9 @@
                 <option value="{{ obra.id_obra }}">{{ obra.nome_obra }}</option>
             {% endfor %}
         </select>
+        {% if not obras %}
+        <p class="aviso-vazio">Nenhuma obra cadastrada. As regras aparecerão aqui depois do cadastro de uma obra.</p>
+        {% endif %}
 
         <section id="faixas" aria-label="Faixas de aprovação"></section>
         <div class="acoes-alcadas">
@@ -30,6 +33,7 @@
             <button id="salvar-alcadas" type="button" disabled>Salvar alterações</button>
         </div>
         <p id="mensagem" role="status" aria-live="polite"></p>
+        <button id="tentar-alcadas" type="button" hidden>Tentar novamente</button>
     </main>
 </body>
 </html>

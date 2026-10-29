@@ -1,6 +1,7 @@
 const lista = document.querySelector("#lista-pedidos");
 const estado = document.querySelector("#estado-lista");
 const modelo = document.querySelector("#modelo-pedido");
+const tentarLista = document.querySelector("#tentar-lista");
 
 function formatarMoeda(centavos) {
     const valor = BigInt(centavos);
@@ -18,6 +19,7 @@ async function carregarPedidos() {
     estado.hidden = false;
     estado.textContent = "Carregando pedidos...";
     lista.replaceChildren();
+    tentarLista.hidden = true;
 
     try {
         const resposta = await fetch("/api/pedidos");
@@ -92,10 +94,11 @@ async function carregarPedidos() {
             lista.append(cartao);
         }
     } catch {
-        estado.hidden = false;
-        estado.textContent =
-            "Não foi possível carregar os pedidos. Atualize a página.";
+    estado.hidden = false;
+    estado.textContent = "Não foi possível carregar os pedidos.";
+    tentarLista.hidden = false;
     }
 }
 
+tentarLista.addEventListener("click", carregarPedidos);
 carregarPedidos();

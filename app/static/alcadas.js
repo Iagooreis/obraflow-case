@@ -3,6 +3,7 @@ const areaFaixas = document.querySelector("#faixas");
 const mensagem = document.querySelector("#mensagem");
 const botaoSalvar = document.querySelector("#salvar-alcadas");
 const botaoAdicionarFaixa = document.querySelector("#adicionar-faixa");
+const botaoTentar = document.querySelector("#tentar-alcadas");
 
 let regrasAtuais = null;
 let usuariosDisponiveis = [];
@@ -179,6 +180,7 @@ async function carregarAlcadas() {
     regrasAtuais = null;
     botaoSalvar.disabled = true;
     botaoAdicionarFaixa.disabled = true;
+    botaoTentar.hidden = true;
 
     if (!idObra) return;
 
@@ -210,6 +212,7 @@ async function carregarAlcadas() {
         if (seletorObra.value === idObra) {
             mensagem.textContent = erro.message;
             mensagem.className = "erro";
+            botaoTentar.hidden = false;
         }
     }
 }
@@ -310,3 +313,4 @@ botaoAdicionarFaixa.addEventListener("click", () => {
 });
 seletorObra.addEventListener("change", carregarAlcadas);
 botaoSalvar.addEventListener("click", salvarAlcadas);
+botaoTentar.addEventListener("click", carregarAlcadas);
